@@ -1,0 +1,23 @@
+{
+  "name": "les_petits_loups_back",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "Sevan Sarikaya",
+  "type": "module",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "node --watch src/app.js"
+  },
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "helmet": "^8.3.0",
+    "jsonwebtoken": "^9.0.3",
+    "mongodb": "^7.6.0",
+    "mongoose": "^9.9.5"
+  }
+}
