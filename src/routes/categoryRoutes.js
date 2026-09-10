@@ -4,7 +4,6 @@ import { authMiddleware } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-// Protéger toutes les routes par l'authentification
 router.use(authMiddleware);
 
 router.get('/', getCategories);

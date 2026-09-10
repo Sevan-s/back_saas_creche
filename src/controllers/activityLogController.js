@@ -2,7 +2,6 @@ import ActivityLog from '../models/ActivityLog.js';
 
 export const logActivity = async ({ crecheId, userId, action, detail, item, quantiteAjustee }) => {
   try {
-    // Si crecheId vaut "GLOBAL" ou n'est pas un ObjectId valide, on stocke null
     const validCrecheId = (crecheId && crecheId !== 'GLOBAL') ? crecheId : null;
 
     await ActivityLog.create({
@@ -20,7 +19,6 @@ export const logActivity = async ({ crecheId, userId, action, detail, item, quan
 
 export const getLogs = async (req, res) => {
   try {
-    // Si l'utilisateur n'a pas de crèche spécifique ou est "GLOBAL", on retourne tous les logs
     const filter = (!req.user.crecheId || req.user.crecheId === 'GLOBAL') 
       ? {} 
       : { creche: req.user.crecheId };

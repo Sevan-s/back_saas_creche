@@ -141,7 +141,6 @@ export const login = async (req, res) => {
       return res.status(400).json({ message: 'Veuillez fournir un email et un mot de passe.' });
     }
 
-    // 1. Chercher l'utilisateur avec la crèche
     const user = await User.findOne({ email: email.toLowerCase() }).populate('creche', 'nom codeRattachement');
     if (!user) {
       return res.status(401).json({ message: 'Identifiants incorrects.' });
@@ -151,13 +150,11 @@ export const login = async (req, res) => {
       return res.status(403).json({ message: 'Ce compte a été désactivé.' });
     }
 
-    // 2. Vérifier le mot de passe
     const isMatch = await bcrypt.compare(motDePasse, user.motDePasseHash);
     if (!isMatch) {
       return res.status(401).json({ message: 'Identifiants incorrects.' });
     }
 
-    // 3. Générer le Token JWT
     const token = jwt.sign(
       { userId: user._id, crecheId: user.creche._id, role: user.role },
       process.env.JWT_SECRET || 'secret_key_temporaire',
@@ -174,7 +171,7 @@ export const login = async (req, res) => {
         email: user.email,
         role: user.role,
         sectionPrincipale: user.sectionPrincipale,
-        codePIN: user.codePIN ? true : false, // Indique si un PIN est défini
+        codePIN: user.codePIN ? true : false,
         creche: user.creche
       }
     });
@@ -193,23 +190,20 @@ export const loginByPin = async (req, res) => {
       return res.status(400).json({ message: 'Code de rattachement et Code PIN requis.' });
     }
 
-    // Chercher la crèche
     const creche = await Creche.findOne({ codeRattachement: codeRattachement.trim().toUpperCase() });
     if (!creche) {
       return res.status(404).json({ message: 'Crèche introuvable avec ce code.' });
     }
 
-    // Chercher l'utilisateur dans cette crèche avec ce code PIN
     const user = await User.findOne({ creche: creche._id, codePIN, actif: true });
     if (!user) {
       return res.status(401).json({ message: 'Code PIN incorrect.' });
     }
 
-    // Générer le Token JWT
     const token = jwt.sign(
       { userId: user._id, crecheId: creche._id, role: user.role },
       process.env.JWT_SECRET || 'secret_key_temporaire',
-      { expiresIn: '1d' } // Token plus court pour la tablette
+      { expiresIn: '1d' }
     );
 
     res.json({

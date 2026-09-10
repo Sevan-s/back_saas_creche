@@ -3,7 +3,6 @@ import { logActivity } from './activityLogController.js';
 
 const getUserId = (req) => req.user?._id || req.user?.id || req.user?.userId;
 
-// 1. Récupérer tous les articles
 export const getItems = async (req, res) => {
   try {
     const { fournisseur, categorie, stockBas } = req.query;
@@ -29,7 +28,6 @@ export const getItems = async (req, res) => {
   }
 };
 
-// 2. Créer un article
 export const createItem = async (req, res) => {
   try {
     const { nom, categorie, fournisseur, quantite, seuilAlerte, unite } = req.body;
@@ -64,7 +62,6 @@ export const createItem = async (req, res) => {
   }
 };
 
-// 3. Ajuster la quantité de stock (+ ou - relatif)
 export const adjustStock = async (req, res) => {
   try {
     const { id } = req.params;
@@ -110,7 +107,6 @@ export const adjustStock = async (req, res) => {
   }
 };
 
-// 4. Mettre à jour directement la quantité (Valeur absolue)
 export const updateQuantity = async (req, res) => {
   try {
     const { id } = req.params;
@@ -137,10 +133,7 @@ export const updateQuantity = async (req, res) => {
     itemAncien.quantite = nouvelleQuantite;
     if (itemAncien.quantiteActuelle !== undefined) itemAncien.quantiteActuelle = nouvelleQuantite;
     
-    // 1. Sauvegarde du document
     await itemAncien.save();
-
-    // 2. Population de la catégorie avant le renvoi
     const updatedItem = await Item.findById(itemAncien._id).populate('categorie', 'nom couleur icone');
 
     let actionType = 'AJUSTEMENT_POSITIF';
@@ -162,7 +155,6 @@ export const updateQuantity = async (req, res) => {
     return res.status(500).json({ message: 'Erreur serveur.' });
   }
 };
-// 5. Supprimer un article
 export const deleteItem = async (req, res) => {
   try {
     const query = { _id: req.params.id };

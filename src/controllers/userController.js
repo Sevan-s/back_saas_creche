@@ -1,6 +1,5 @@
 import User from '../models/user.js';
 
-// Récupérer tous les utilisateurs de la crèche
 export const getUsers = async (req, res) => {
   try {
     const users = await User.find({ creche: req.user.crecheId })
@@ -13,7 +12,6 @@ export const getUsers = async (req, res) => {
   }
 };
 
-// Mettre à jour un utilisateur (Rôle, Section, PIN, Statut actif)
 export const updateUser = async (req, res) => {
   try {
     const { id } = req.params;

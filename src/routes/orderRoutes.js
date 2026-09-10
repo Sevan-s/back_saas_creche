@@ -11,7 +11,6 @@ import {
 
 const router = express.Router();
 
-// Utilisation de authMiddleware au lieu de protect
 router.use(authMiddleware);
 
 router.get('/', getOrders);

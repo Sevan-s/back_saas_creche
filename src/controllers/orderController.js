@@ -2,7 +2,6 @@ import Order from '../models/Order.js';
 import Item from '../models/Item.js';
 import { logActivity } from './activityLogController.js';
 
-// 1. Obtenir toutes les commandes de la crèche
 export const getOrders = async (req, res) => {
   try {
     const { statut } = req.query;
@@ -24,7 +23,6 @@ export const getOrders = async (req, res) => {
   }
 };
 
-// 2. Créer une commande manuelle pour un ou plusieurs articles
 export const createOrder = async (req, res) => {
   try {
     const crecheId = req.user.crecheId;
@@ -47,16 +45,13 @@ export const createOrder = async (req, res) => {
       remarques,
     });
 
-    // Récupération complète avec lean() pour manipuler un objet JS pur et rapide
     const populatedOrder = await Order.findById(newOrder._id)
       .populate('creePar', 'nom prenom')
       .populate('items.item', 'nom unite quantiteActuelle quantiteSouhaitee')
       .lean();
 
-    // --- ENREGISTREMENT DÉTAILLÉ DANS L'HISTORIQUE ---
     if (populatedOrder && populatedOrder.items) {
       for (const orderItem of populatedOrder.items) {
-        // Extraction sécurisée de l'ID et du Nom du produit
         const itemId = orderItem.item?._id || orderItem.item;
         const itemNom = orderItem.item?.nom || 'Article';
         const qty = orderItem.quantiteCommandee || 1;
@@ -79,7 +74,6 @@ export const createOrder = async (req, res) => {
   }
 };
 
-// 3. Générer une commande automatique
 export const generateAutoOrder = async (req, res) => {
   try {
     const crecheId = req.user.crecheId;
@@ -133,7 +127,6 @@ export const generateAutoOrder = async (req, res) => {
   }
 };
 
-// 4. Valider / Changer le statut d'une commande
 export const updateOrderStatus = async (req, res) => {
   try {
     const { id } = req.params;
@@ -156,7 +149,6 @@ export const updateOrderStatus = async (req, res) => {
 
     await order.save();
 
-    // Définition de l'action et du détail pour le log
     let action = 'MODIFICATION_COMMANDE';
     let detail = `Commande ${order.numeroCommande} passée au statut "${order.statut}"`;
 
@@ -179,7 +171,6 @@ export const updateOrderStatus = async (req, res) => {
   }
 };
 
-// 5. Réceptionner une commande (Incrémente le stock et enregistre les logs)
 export const receiveOrder = async (req, res) => {
   try {
     const { id } = req.params;
@@ -203,8 +194,6 @@ export const receiveOrder = async (req, res) => {
         if (itemObj) {
           itemObj.quantite = (itemObj.quantite || 0) + itemRecu.quantiteRecue;
           await itemObj.save();
-
-          // Log individuel de réapprovisionnement de stock
           await logActivity({
             crecheId: req.user.crecheId,
             userId: req.user.userId,

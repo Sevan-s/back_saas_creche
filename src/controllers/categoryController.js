@@ -1,18 +1,13 @@
 import Category from '../models/Category.js';
 import { logActivity } from './activityLogController.js';
 
-// Helper pour récupérer l'ID utilisateur
 const getUserId = (req) => req.user?._id || req.user?.id || req.user?.userId;
 
-// Helper pour récupérer l'ID crèche
 const getCrecheId = (req) => req.user?.creche || req.user?.crecheId;
 
-// 1. Obtenir toutes les catégories
 export const getCategories = async (req, res) => {
   try {
     const crecheId = getCrecheId(req);
-
-    // Si pas de crèche spécifique ou si "GLOBAL", on récupère toutes les catégories
     const query = (!crecheId || crecheId === 'GLOBAL') ? {} : { creche: crecheId };
 
     const categories = await Category.find(query).sort({ nom: 1 });
@@ -24,7 +19,6 @@ export const getCategories = async (req, res) => {
   }
 };
 
-// 2. Créer une nouvelle catégorie
 export const createCategory = async (req, res) => {
   try {
     const { nom, description } = req.body;
@@ -42,11 +36,10 @@ export const createCategory = async (req, res) => {
       description
     });
 
-    // Journalisation de la création
     await logActivity({
       crecheId: validCrecheId,
       userId: getUserId(req),
-      action: 'CREATION_CATEGORIE', // Action générique de création du catalogue
+      action: 'CREATION_CATEGORIE',
       detail: `Création de la catégorie "${newCategory.nom}"`,
       item: null,
       quantiteAjustee: 0
@@ -59,7 +52,6 @@ export const createCategory = async (req, res) => {
   }
 };
 
-// 3. Supprimer une catégorie
 export const deleteCategory = async (req, res) => {
   try {
     const crecheId = getCrecheId(req);
@@ -75,11 +67,10 @@ export const deleteCategory = async (req, res) => {
       return res.status(404).json({ message: 'Catégorie introuvable.' });
     }
 
-    // Journalisation de la suppression
     await logActivity({
       crecheId: (crecheId && crecheId !== 'GLOBAL') ? crecheId : null,
       userId: getUserId(req),
-      action: 'SUPPRESSION_CATEGORIE', // Action générique de suppression du catalogue
+      action: 'SUPPRESSION_CATEGORIE',
       detail: `Suppression de la catégorie "${category.nom}"`,
       item: null,
       quantiteAjustee: 0

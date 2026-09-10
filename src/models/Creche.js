@@ -37,8 +37,6 @@ const crecheSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
-
-// Récupère le modèle existant s'il a déjà été compilé, sinon le crée
 const Creche = mongoose.models.Creche || mongoose.model('Creche', crecheSchema);
 
 export default Creche;
