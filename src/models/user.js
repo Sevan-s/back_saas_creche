@@ -35,7 +35,7 @@ const userSchema = new mongoose.Schema(
       required: true,
     },
     codePIN: {
-      type: String, // Pour la connexion rapide sur tablette (4 chiffres)
+      type: String,
       trim: true,
     },
     creche: {

@@ -25,9 +25,9 @@ const activityLogSchema = new mongoose.Schema(
         'CREATION_ARTICLE',
         'SUPPRESSION_ARTICLE',
         'MAJ_ARTICLE',
-        'CREATION_CATEGORIE',   // Ajouté
-        'SUPPRESSION_CATEGORIE', // Ajouté
-        'CREATION_COMMANDE', // <-- Ajouté
+        'CREATION_CATEGORIE',
+        'SUPPRESSION_CATEGORIE',
+        'CREATION_COMMANDE',
         'COMMANDE_PASSEE',
       ],
     },

@@ -182,3 +182,48 @@ export const deleteItem = async (req, res) => {
     res.status(500).json({ message: 'Erreur lors de la suppression de l\'article.' });
   }
 };
+
+export const updateItem = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { nom, categorie, fournisseur, quantite, seuilAlerte, unite } = req.body;
+
+    const query = { _id: id };
+    if (req.user.crecheId && req.user.crecheId !== 'GLOBAL') {
+      query.creche = req.user.crecheId;
+    }
+
+    const item = await Item.findOne(query);
+    if (!item) {
+      return res.status(404).json({ message: 'Article introuvable.' });
+    }
+
+    if (nom !== undefined) item.nom = nom;
+    if (categorie !== undefined) item.categorie = categorie;
+    if (fournisseur !== undefined) item.fournisseur = fournisseur;
+    if (quantite !== undefined) {
+      item.quantite = Number(quantite);
+      if (item.quantiteActuelle !== undefined) item.quantiteActuelle = Number(quantite);
+    }
+    if (seuilAlerte !== undefined) item.seuilAlerte = Number(seuilAlerte);
+    if (unite !== undefined) item.unite = unite;
+
+    await item.save();
+
+    const updatedItem = await Item.findById(item._id).populate('categorie', 'nom couleur icone');
+
+    await logActivity({
+      crecheId: req.user.crecheId,
+      userId: getUserId(req),
+      action: 'MODIFICATION_ARTICLE',
+      detail: `Modification des informations de l'article "${updatedItem.nom}"`,
+      item: updatedItem._id,
+      quantiteAjustee: 0
+    });
+
+    res.json(updatedItem);
+  } catch (error) {
+    console.error('Erreur mise à jour article:', error);
+    res.status(500).json({ message: "Erreur lors de la mise à jour de l'article." });
+  }
+};
